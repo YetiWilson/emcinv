@@ -1,5 +1,5 @@
 (function(){
-  var app = angular.module("microsoft", ['smart-table','ngSanitize','ngCsv','nvd3']);
+  var app = angular.module("microsoft", ['smart-table','ngSanitize','ngCsv','nvd3','ui.bootstrap']);
 
   var pageNum = [
 		{
@@ -22,7 +22,7 @@
 		}
 	];
 
-  app.controller("MsInvController", function($scope, $http, InventoryFactory) {
+  app.controller("MsInvController", function($scope, $http, InventoryFactory, $uibModal, $sce, $log) {
     $scope.companyList = new Array();
     $scope.selectedCustomer = "Select Customer";
 		$http.get('customers.json').success(function(data) {
@@ -47,28 +47,30 @@
 					default:
 						return model;
 				}
-			};
-		$scope.options = {
-			chart: {
-				type: 'pieChart',
-				height: 500,
-				x: function(d){return d.key;},
-				y: function(d){return d.y;},
-				showLabels: true,
-				duration: 500,
-				labelThreshold: 0.01,
-				labelSunbeamLayout: true,
-				legend: {
-					margin: {
-						top: 5,
-						right: 35,
-						bottom: 5,
-						left: 0
-					}
-				}
-			}
 		};
 
+		$scope.productName = function(product,sn) {
+      if(product == "XTREMIO-NA") {
+        return $sce.trustAsHtml("\<a ng-click\=\"open()\"\>"+sn+"\<\/a\>");
+      } else {
+        return sn;
+      }
+    }
+
+    $scope.open = function (size) {
+
+      var modalInstance = $uibModal.open({
+        animation: $scope.animationsEnabled,
+        templateUrl: 'myModalContent.html',
+        controller: 'ModalInstanceCtrl',
+        size: size,
+        resolve: {
+          items: function () {
+            return $scope.items;
+          }
+        }
+      });
+    }
 		$scope.getData = function(selectedDuns,selectedName) {
 			$scope.selectedCustomer = selectedName;
 			InventoryFactory.getInv(selectedDuns).success(function(data) {
@@ -86,4 +88,19 @@
 		}
 	});
 
+  app.controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, items) {
+
+  $scope.items = items;
+  $scope.selected = {
+    item: $scope.items[0]
+  };
+
+  $scope.ok = function () {
+    $uibModalInstance.close($scope.selected.item);
+  };
+
+  $scope.cancel = function () {
+    $uibModalInstance.dismiss('cancel');
+  };
+});
 })();

@@ -7,12 +7,13 @@
     <script type="text/javascript" src="node_modules/angular/angular.js"></script>
     <script type="text/javascript" src="node_modules/angular-smart-table/dist/smart-table.js"></script>
     <script type="text/javascript" src="node_modules/jquery/dist/jquery.min.js"></script>
-    <script type="text/javascript" src="ngbootstrap.js"></script>
     <script type="text/javascript" src="node_modules/bootstrap/dist/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="node_modules/angular-sanitize/angular-sanitize.min.js"></script>
     <script type="text/javascript" src="node_modules/ng-csv/build/ng-csv.min.js"></script>
     <script type="text/javascript" src="node_modules/d3/d3.min.js"></script>
     <script type="text/javascript" src="node_modules/nvd3/build/nv.d3.min.js"></script>
+    <script type="text/javascript" src="node_modules/angular-nvd3/dist/angular-nvd3.min.js"></script>
+    <script type="text/javascript" src="node_modules/angular-ui-bootstrap/dist/ui-bootstrap.js"></script>
     <script type="text/javascript" src="app.js"></script>
     <link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="node_modules/nvd3/build/nv.d3.min.css" />
@@ -53,6 +54,18 @@
         </div>
       </nav><br />
   	<div class="container" ng-controller="MsInvController">
+    <script type="text/ng-template" id="myModalContent.html">
+        <div class="modal-header">
+            <h3 class="modal-title">I'm a modal!</h3>
+        </div>
+        <div class="modal-body">
+          Stuff and things
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+        </div>
+    </script>
 			<div class="dropdown" ng-cloak>
 				<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
 					<span ng-bind="selectedCustomer"></span>
@@ -67,7 +80,7 @@
 			<a href="#">
       	<span class="label label-default"><span class="glyphicon glyphicon-plus"></span> Add New Customer</span><br />
 			</a>
-			<button type="button" ng-csv="myData" filename="test.csv">Export</button>
+			<button type="button" ng-csv="displayedData" filename="ib.csv">Export</button>
       <div class="controls-left">
 				<select ng-model="itemsByPage" ng-options="item.id as item.id for item in pageNums" ng-change="">
         	<option value="15">15</option>
@@ -99,7 +112,7 @@
 				<tbody>
 					<tr ng-repeat="row in displayedData">
 						<td ng-bind="row.CS_CUSTOMER_NAME"></td>
-						<td ng-bind="row.ITEM_SERIAL_NUMBER"></td>
+						<td ng-bind-html="productName(row.PRODUCT_FAMILY, row.ITEM_SERIAL_NUMBER)"></td>
 						<td ng-bind="row.PRODUCT_FAMILY"></td>
 						<td ng-bind="modelName(row.MODEL)"></td>
 						<td ng-bind="row.MICROCODE"></td>
