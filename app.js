@@ -1,5 +1,5 @@
 (function(){
-  var app = angular.module("microsoft", ['smart-table','ngSanitize','ngCsv','nvd3','ui.bootstrap']);
+  var app = angular.module("microsoft", ['smart-table','ngSanitize','ngCsv','ui.bootstrap']);
 
   var pageNum = [
 		{
