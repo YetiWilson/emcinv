@@ -4,14 +4,27 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript" src="node_modules/angular/angular.js"></script>
-    <script type="text/javascript" src="node_modules/angular-ui-bootstrap/dist/ui-bootstrap.js"></script>
+    <script type="text/javascript" src="node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js"></script>
     <script type="text/javascript" src="node_modules/angular-smart-table/dist/smart-table.js"></script>
     <script type="text/javascript" src="new_app.js"></script>
     <link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="custom.css" />
     <title>EMC Bigger Data</title>
   </head>
   <body>
     <div ng-controller="InstallBaseController">
+      <script type="text/ng-template" id="xtremioModalContent.html">
+        <div class="modal-body">
+          <div ng-if="waiting" style="width:100%">
+            <div style="width:50% margin:0 auto"><img src="loading_animation.gif" alt="Loading" /></div>
+          </div>
+          <div ng-repeat="item in xtremioData.AllObjects.Systems">
+            <div ng-repeat="(key, val) in item">
+              {{key}} = {{val}}
+            </div>
+          </div>
+        </div>
+      </script>
     <div class="btn-group" uib-dropdown is-open="status.isopen">
       <button id="customer-button" type="button" class="btn btn-primary" uib-dropdown-toggle>
         <span ng-bind="selectedCustomer"></span>
@@ -47,7 +60,7 @@
         <tbody>
           <tr ng-repeat="row in installData">
             <td ng-bind="row.CS_CUSTOMER_NAME"></td>
-            <td ng-bind="row.ITEM_SERIAL_NUMBER"></td>
+            <td><button type="button" class="btn btn-info btn-sm" ng-if="productName(row)" ng-click="open(row.ITEM_SERIAL_NUMBER)"><div ng-bind="row.ITEM_SERIAL_NUMBER"></div><i class="glyphicon glyphicon-info-sign"></i></button><div ng-if="productName(row) == false" ng-bind="row.ITEM_SERIAL_NUMBER"></div></td>
             <td ng-bind="row.PRODUCT_FAMILY"></td>
             <td ng-bind="modelName(row.MODEL)"></td>
             <td ng-bind="row.MICROCODE"></td>

@@ -1,6 +1,6 @@
 var app = angular.module('emcinv', ['ui.bootstrap','smart-table']);
 
-app.controller('InstallBaseController', function($scope,$http,$uibModal) {
+app.controller('InstallBaseController', function($scope,$http,$uibModal,$log,$compile) {
   $scope.selectedCustomer = "Select Customer";
   $http.get('customers.json').success(function(data) {
     $scope.customerList = data;
@@ -34,21 +34,44 @@ app.controller('InstallBaseController', function($scope,$http,$uibModal) {
   };
 
   $scope.open = function(sn) {
-    var xtremioModal = $uibModal.open({
+    console.log(sn);
+    var modalInstance = $uibModal.open({
       animation: false,
       templateUrl: 'xtremioModalContent.html',
       controller: 'xtremioModalController',
+      size: 'sm',
       resolve: {
         sn: function() { return sn; }
       }
     });
+    modalInstance.result.then(function () {
+    }, function () {
+      $log.info('Modal dismissed at: ' + new Date());
+    });
   };
 
+  $scope.productName = function(row) {
+    if(row.PRODUCT_FAMILY == "XTREMIO-NA") {
+        return true;
+      } else {
+        return false;
+      }
+  }
 });
 
 app.controller('xtremioModalController', function($scope,$http,$uibModalInstance,sn) {
-  $http.get('http://pnwreport.bellevuelab.isus.emc.com/api/xtremio/' + sn)
+  $scope.sn = sn
+  $scope.waiting = true;
+  $http.get('http://pnwreport.bellevuelab.isus.emc.com/api/xtremio/' + $scope.sn)
     .success(function(data) {
-      $scope.xtremioData = data['AllObjects'];
+      $scope.waiting = false;
+      $scope.xtremioData = data;
     });
 });
+
+app.filter("sanitize", ['$sce', function($sce) {
+  return function(htmlCode){
+    console.log(htmlCode);
+    return $sce.trustAsHtml(htmlCode);
+  }
+}]);
