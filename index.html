@@ -1,132 +1,79 @@
-<!DOCTYPE html>
-<html ng-app="microsoft">
+<html ng-app="emcinv">
   <head>
-    <meta charset="utf-8">
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <script type="text/javascript" src="node_modules/angular/angular.js"></script>
+    <script type="text/javascript" src="node_modules/angular-ui-bootstrap/dist/ui-bootstrap-tpls.js"></script>
     <script type="text/javascript" src="node_modules/angular-smart-table/dist/smart-table.js"></script>
-    <script type="text/javascript" src="node_modules/angular-sanitize/angular-sanitize.min.js"></script>
-    <script type="text/javascript" src="node_modules/ng-csv/build/ng-csv.min.js"></script>
-    <script type="text/javascript" src="node_modules/angular-ui-bootstrap/dist/ui-bootstrap.js"></script>
-    <script type="text/javascript" src="app.js"></script>
+    <script type="text/javascript" src="new_app.js"></script>
     <link rel="stylesheet" type="text/css" href="node_modules/bootstrap/dist/css/bootstrap.min.css" />
-    <style type="text/css" media="all">
-      body { 
-    		padding-top: 65px; 
-      }
-			a:hover {
-				text-decoration: none;
-			}
-			a:active {
-				text-decoration: none;
-			}
-    </style>
+    <link rel="stylesheet" type="text/css" href="custom.css" />
+    <title>EMC Bigger Data</title>
   </head>
   <body>
-      <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
-        <div class="container">
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-              <span class="sr-only">Toggle Navigation</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">EMC Real-time Bigger Data</a>
-          </div>
-          <div id="navbar" class="collapse navbar-collapse">
-            <ul class="nav navbar-nav">
-              <li class="active">
-                <a href="#">Home</a>
-              </li>
-              <li>
-                <a href="#">Visualize</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav><br />
-  	<div class="container" ng-controller="MsInvController">
-    <script type="text/ng-template" id="myModalContent.html">
-        <div class="modal-header">
-            <h3 class="modal-title">I'm a modal!</h3>
-        </div>
+    <div ng-controller="InstallBaseController">
+      <script type="text/ng-template" id="xtremioModalContent.html">
         <div class="modal-body">
-          Stuff and things
+          <div ng-if="waiting" style="width:100%">
+            <div style="width:50% margin:0 auto"><img src="loading_animation.gif" alt="Loading" /></div>
+          </div>
+          <div ng-repeat="item in xtremioData.AllObjects.Systems">
+            <div ng-repeat="(key, val) in item">
+              {{key}} = {{val}}
+            </div>
+          </div>
         </div>
-        <div class="modal-footer">
-            <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
-            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
-        </div>
-    </script>
-			<div class="dropdown" ng-cloak>
-				<button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-expanded="true">
-					<span ng-bind="selectedCustomer"></span>
-					<span class="caret"></span>
-				</button>
-				<ul class="dropdown-menu" role="menu" aria-labelledby="dropdownMenu1">
-					<li ng-repeat="company in companyList">
-						<a role="menuitem" tabindex="-1" href="#" ng-click="getData(company.id,company.name)">{{company.name}}</a>
-					</li>
-				</ul>
-			</div>
-			<a href="#">
-      	<span class="label label-default"><span class="glyphicon glyphicon-plus"></span> Add New Customer</span><br />
-			</a>
-			<button type="button" ng-csv="displayedData" filename="ib.csv">Export</button>
-      <div class="controls-left">
-				<select ng-model="itemsByPage" ng-options="item.id as item.id for item in pageNums" ng-change="">
-        	<option value="15">15</option>
-      	</select>
-      </div>
-			<br />
-			<!--<h2><span ng-show="myData" class="label label-primary" ng-bind="myData['name']"></span></h2><br />
-			<h3><span class="label label-info" ng-show="myData"><span class="badge" ng-show="myData"><span class="glyphicon glyphicon-snowflake" aria-hidden="true"></span></span>&nbsp;<span ng-bind="myData['weather']['weather']"></span></span></h3>-->
-			<div class="table-container" id="simple_table">
-			<table st-table="displayedData" st-safe-src="myData" class="table table-striped scroll">
-				<thead>
-					<tr>
-						<th st-sort="CS_CUSTOMER_NAME">Customer Name</th>
-						<th st-sort="ITEM_SERIAL_NUMBER">S/N</th>
-						<th st-sort="PRODUCT_FAMILY">Product</th>
-						<th st-sort="MODEL">Model</th>
-						<th st-sort="MICROCODE">Microcode</th>
-						<th st-sort="City">City</th>
-						<th st-sort="PARTY_NUMBER">SiteID</th>
-						<th st-sort="ITEM_INSTALL_DATE">Install Date</th>
-						<th st-sort="CONTRACT_SUBLINE_END_DATE">Contract End</th>
-						<th st-sort="SYR_LAST_DIAL_HOME_DATE">Dial Home</th>
-						<th st-sort="SALES_ORDER">Sales Order</th>
-					</tr>
-					<tr>
-						<th colspan="6"><input st-search="" class="form-control" placeholder="search ..." type="text"/></th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr ng-repeat="row in displayedData">
-						<td ng-bind="row.CS_CUSTOMER_NAME"></td>
-						<td ng-bind-html="productName(row.PRODUCT_FAMILY, row.ITEM_SERIAL_NUMBER)"></td>
-						<td ng-bind="row.PRODUCT_FAMILY"></td>
-						<td ng-bind="modelName(row.MODEL)"></td>
-						<td ng-bind="row.MICROCODE"></td>
-						<td ng-bind="row.City"></td>
-						<td ng-bind="row.PARTY_NUMBER"></td>
-						<td ng-bind="row.ITEM_INSTALL_DATE"></td>
-						<td ng-bind="row.CONTRACT_SUBLINE_END_DATE"></td>
-						<td ng-bind="row.SYR_LAST_DIAL_HOME_DATE"></td>
-						<td ng-bind="row.SALES_ORDER"></td>
-					</tr>
-				</tbody>
-				<tfoot>
-					<tr>
-						<td colspan="5" class="text-left">
-							<div st-pagination st-items-by-page="itemsByPage" st-displayed-pages="5"></div>
-						</td>
-					</tr>
-				</tfoot>
-			</table>
-		</div>
-		</div>
+      </script>
+    <div class="btn-group" uib-dropdown is-open="status.isopen">
+      <button id="customer-button" type="button" class="btn btn-primary" uib-dropdown-toggle>
+        <span ng-bind="selectedCustomer"></span>
+        <span class="caret"></span>
+      </button>
+      <ul uib-dropdown-menu aria-labelledby="customer-button">
+        <li ng-repeat="customer in customerList">
+          <a href ng-bind="customer.name" ng-click="setIB(customer)"></a>
+        </li>
+      </ul>
+    </div>
+    <br />
+    <div class="tableContainer" id="smartTable">
+      <table st-table="installData" st-safe-src="safeInstallData" class="table table-striped">
+        <thead>
+          <tr>
+            <th st-sort="CS_CUSTOMER_NAME">Customer Name</th>
+            <th st-sort="ITEM_SERIAL_NUMBER">S/N</th>
+            <th st-sort="PRODUCT_FAMILY">Product</th>
+            <th st-sort="MODEL">Model</th>
+            <th st-sort="MICROCODE">Microcode</th>
+            <th st-sort="City">City</th>
+            <th st-sort="PARTY_NUMBER">SiteID</th>
+            <th st-sort="ITEM_INSTALL_DATE">Install Date</th>
+            <th st-sort="CONTRACT_SUBLINE_END_DATE">Contract End</th>
+            <th st-sort="SYR_LAST_DIAL_HOME_DATE">Dial Home</th>
+            <th st-sort="SALES_ORDER">Sales Order</th>
+          </tr>
+          <tr>
+            <th colspan="6"><input st-search="" class="form-control" placeholder="search ..." type="text"/></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="row in installData">
+            <td ng-bind="row.CS_CUSTOMER_NAME"></td>
+            <td><button type="button" class="btn btn-info btn-sm" ng-if="productName(row)" ng-click="open(row.ITEM_SERIAL_NUMBER)"><div ng-bind="row.ITEM_SERIAL_NUMBER"></div><i class="glyphicon glyphicon-info-sign"></i></button><div ng-if="productName(row) == false" ng-bind="row.ITEM_SERIAL_NUMBER"></div></td>
+            <td ng-bind="row.PRODUCT_FAMILY"></td>
+            <td ng-bind="modelName(row.MODEL)"></td>
+            <td ng-bind="row.MICROCODE"></td>
+            <td ng-bind="row.City"></td>
+            <td ng-bind="row.PARTY_NUMBER"></td>
+            <td ng-bind="row.ITEM_INSTALL_DATE"></td>
+            <td ng-bind="row.CONTRACT_SUBLINE_END_DATE"></td>
+            <td ng-bind="row.SYR_LAST_DIAL_HOME_DATE"></td>
+            <td ng-bind="row.SALES_ORDER"></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    </div>
   </body>
 </html>

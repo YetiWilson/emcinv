@@ -1,106 +1,77 @@
-(function(){
-  var app = angular.module("microsoft", ['smart-table','ngSanitize','ngCsv','ui.bootstrap']);
+var app = angular.module('emcinv', ['ui.bootstrap','smart-table']);
 
-  var pageNum = [
-		{
-			id: 15
-		},
-		{
-			id: 30
-		},
-		{
-			id: 45
-		},
-		{
-			id: 60
-		},
-		{
-			id: 75
-		},
-		{
-			id: 90
-		}
-	];
+app.controller('InstallBaseController', function($scope,$http,$uibModal,$log,$compile) {
+  $scope.selectedCustomer = "Select Customer";
+  $http.get('customers.json').success(function(data) {
+    $scope.customerList = data;
+  });
 
-  app.controller("MsInvController", function($scope, $http, InventoryFactory, $uibModal, $sce, $log) {
-    $scope.companyList = new Array();
-    $scope.selectedCustomer = "Select Customer";
-		$http.get('customers.json').success(function(data) {
-			$scope.companyList = data;
-		});
-    $scope.pageNums = pageNum;
-    $scope.itemsByPage = 15;
-    $scope.modelName = function(model) {
-    		switch(model) {
-					case "SD-3D":
-						return "VMAX 40K";
-						break;
-					case "SB-3D":
-						return "VMAX (Orig)";
-						break;
-					case "BA-SYS1E":
-						return "VMAX 10K";
-						break;
-					case "S2-3D":
-						return "VMAX 20K";
-						break;
-					default:
-						return model;
-				}
-		};
-
-		$scope.productName = function(product,sn) {
-      if(product == "XTREMIO-NA") {
-        return $sce.trustAsHtml("\<a ng-click\=\"open()\"\>"+sn+"\<\/a\>");
-      } else {
-        return sn;
-      }
-    }
-
-    $scope.open = function (size) {
-
-      var modalInstance = $uibModal.open({
-        animation: $scope.animationsEnabled,
-        templateUrl: 'myModalContent.html',
-        controller: 'ModalInstanceCtrl',
-        size: size,
-        resolve: {
-          items: function () {
-            return $scope.items;
-          }
-        }
+  $scope.setIB = function(customer) {
+    $scope.selectedCustomer = customer.name;
+    $http.get('http://pnwreport.bellevuelab.isus.emc.com/api/installs/' + customer.id)
+      .success(function(data) {
+        $scope.safeInstallData = data['rows'];
       });
+  };
+
+  $scope.modelName = function(model) {
+    switch(model) {
+          case "SD-3D":
+            return "VMAX 40K";
+            break;
+          case "SB-3D":
+            return "VMAX (Orig)";
+            break;
+          case "BA-SYS1E":
+            return "VMAX 10K";
+            break;
+          case "S2-3D":
+            return "VMAX 20K";
+            break;
+          default:
+            return model;
     }
-		$scope.getData = function(selectedDuns,selectedName) {
-			$scope.selectedCustomer = selectedName;
-			InventoryFactory.getInv(selectedDuns).success(function(data) {
-			$scope.myData = data['rows'];
-			$scope.myPages = data['pages'];
-			})
-		};
-	});
-
-	app.factory("InventoryFactory", function($http) {
-		return {
-			getInv: function(dunId){
-				return $http.get('http://pnwreport.bellevuelab.isus.emc.com/api/installs/' + dunId)
-			}
-		}
-	});
-
-  app.controller('ModalInstanceCtrl', function ($scope, $uibModalInstance, items) {
-
-  $scope.items = items;
-  $scope.selected = {
-    item: $scope.items[0]
   };
 
-  $scope.ok = function () {
-    $uibModalInstance.close($scope.selected.item);
+  $scope.open = function(sn) {
+    console.log(sn);
+    var modalInstance = $uibModal.open({
+      animation: false,
+      templateUrl: 'xtremioModalContent.html',
+      controller: 'xtremioModalController',
+      size: 'sm',
+      resolve: {
+        sn: function() { return sn; }
+      }
+    });
+    modalInstance.result.then(function () {
+    }, function () {
+      $log.info('Modal dismissed at: ' + new Date());
+    });
   };
 
-  $scope.cancel = function () {
-    $uibModalInstance.dismiss('cancel');
-  };
+  $scope.productName = function(row) {
+    if(row.PRODUCT_FAMILY == "XTREMIO-NA") {
+        return true;
+      } else {
+        return false;
+      }
+  }
 });
-})();
+
+app.controller('xtremioModalController', function($scope,$http,$uibModalInstance,sn) {
+  $scope.sn = sn
+  $scope.waiting = true;
+  $http.get('http://pnwreport.bellevuelab.isus.emc.com/api/xtremio/' + $scope.sn)
+    .success(function(data) {
+      $scope.waiting = false;
+      $scope.xtremioData = data;
+    });
+});
+
+app.filter("sanitize", ['$sce', function($sce) {
+  return function(htmlCode){
+    console.log(htmlCode);
+    return $sce.trustAsHtml(htmlCode);
+  }
+}]);
