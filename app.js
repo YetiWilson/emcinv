@@ -1,5 +1,5 @@
 var app = angular.module('emcinv', ['ui.bootstrap','smart-table']);
-
+//Baldie is a dick
 app.controller('InstallBaseController', function($scope,$http,$uibModal,$log,$compile) {
   $scope.selectedCustomer = "Select Customer";
   $http.get('customers.json').success(function(data) {
