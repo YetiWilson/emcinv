@@ -60,7 +60,7 @@
         <tbody>
           <tr ng-repeat="row in installData">
             <td ng-bind="row.CS_CUSTOMER_NAME"></td>
-            <td><button type="button" class="btn btn-info btn-sm" ng-if="productName(row)" ng-click="open(row.ITEM_SERIAL_NUMBER)"><div ng-bind="row.ITEM_SERIAL_NUMBER"></div><i class="glyphicon glyphicon-info-sign"></i></button><div ng-if="productName(row) == false" ng-bind="row.ITEM_SERIAL_NUMBER"></div></td>
+            <td><a href ng-if="productName(row)" ng-click="open(row.ITEM_SERIAL_NUMBER)"><div ng-bind="row.ITEM_SERIAL_NUMBER"></div><i class="glyphicon glyphicon-info-sign"></i></button><div ng-if="productName(row) == false" ng-bind="row.ITEM_SERIAL_NUMBER"></div></td>
             <td ng-bind="row.PRODUCT_FAMILY"></td>
             <td ng-bind="modelName(row.MODEL)"></td>
             <td ng-bind="row.MICROCODE"></td>

@@ -1,0 +1,6 @@
+---
+applications:
+- name: emcinv
+  memory: 64MB
+  host: emcinv
+  domain: bellevuelab.isus.emc.com
