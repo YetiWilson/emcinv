@@ -18,6 +18,9 @@
           <div ng-if="waiting" style="width:100%">
             <div style="width:50% margin:0 auto"><img src="loading_animation.gif" alt="Loading" /></div>
           </div>
+          <div ng-if="error" style="width:100%">
+            <div style="width:50% margin:0 auto"><img src="error.gif" alt="Error" /></div>
+          </div>
           <div ng-repeat="item in xtremioData.AllObjects.Systems">
             <div ng-repeat="(key, val) in item">
               {{key}} = {{val}}

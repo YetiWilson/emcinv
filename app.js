@@ -62,10 +62,15 @@ app.controller('InstallBaseController', function($scope,$http,$uibModal,$log,$co
 app.controller('xtremioModalController', function($scope,$http,$uibModalInstance,sn) {
   $scope.sn = sn
   $scope.waiting = true;
+  $scope.error = false;
   $http.get('http://pnwreport.bellevuelab.isus.emc.com/api/xtremio/' + $scope.sn)
     .success(function(data) {
       $scope.waiting = false;
       $scope.xtremioData = data;
+    })
+    .error(function(data) {
+      $scope.waiting = false;
+      $scope.error = true
     });
 });
 
