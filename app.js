@@ -1,4 +1,4 @@
-var app = angular.module('emcinv', ['ui.bootstrap','smart-table']);
+var app = angular.module('emcinv', ['ui.bootstrap','smart-table','ngSanitize','ngCsv']);
 
 app.controller('InstallBaseController', function($scope,$http,$uibModal,$log,$compile) {
   $scope.selectedCustomer = "Select Customer";
