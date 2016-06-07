@@ -35,7 +35,7 @@
         <span ng-bind="selectedCustomer"></span>
         <span class="caret"></span>
       </button>
-      <button id="export-csv" type="button" class="btn btn-default" ng-csv="installData" filename="{{ selectedCustomer }}">
+      <button id="export-csv" csv-label="true" type="button" class="btn btn-default" ng-csv="installData" filename="{{ selectedCustomer }}">
         Export to CSV
         <span class="caret"></span>
       </button>
