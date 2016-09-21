@@ -29,12 +29,14 @@ app.controller('InstallBaseController', function($scope,$http,$uibModal,$log,$co
             return "VMAX 20K";
             break;
           case "X02-CTRLE-400-T-F":
+          case "X02-CTRL-TAGF":
             return "10TB Bricks";
             break;
-          case "X02-CTRLE-T-F";
+          case "X02-CTRLE-T-F":
             return "20TB Bricks";
             break;
-          case "X03-CTRLE-1600-T-F";
+          case "X03-CTRLE-1600-T-F":
+          case "X03-CTRLE-1600-T":
             return "40TB Bricks";
             break;
           default:
