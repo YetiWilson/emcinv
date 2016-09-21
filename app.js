@@ -33,6 +33,7 @@ app.controller('InstallBaseController', function($scope,$http,$uibModal,$log,$co
             return "10TB Bricks";
             break;
           case "X02-CTRLE-T-F":
+          case "X02-CTRLE-T":
             return "20TB Bricks";
             break;
           case "X03-CTRLE-1600-T-F":
